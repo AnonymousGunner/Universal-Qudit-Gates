@@ -1,4 +1,4 @@
-# Minimal-Universal-Qudit-Gate-Sets
+# Minimal-Universal-Multi-Qudit-Gate-Sets
 The code repository alligns with the research paper titled "Practically Implementable Minimal Universal Gate Sets for Multi-Qudit Systems with Cryptographic Validation".
 
 ## 1. Introduction
@@ -225,4 +225,5 @@ Histograms, distribution plots and simulation logs will be deposited in `Grover_
 ## ✅ Conclusion
 This repository validates the practicality of the minimal universal gate set (`PHASE1 ∪ T_elements`) by demonstrating end-to-end cryptographic protocols in a reproducible Python framework.  
 Both **Grover's Algorithm** and **QKD Simulation** confirm **functional equivalence** between traditional and decomposed implementations, ensuring security and scalability in cryptographic contexts.
+
 
