@@ -10,31 +10,8 @@ Here we validate two cryptographically significant algorithms: **Grover's search
 Both implementations are constructed with traditional gates and with decomposed gates synthesized entirely from the universal set `PHASE1 ∪ T_elements`. 
 The aim is to confirm functional equivalence and assess performance trade-offs, thereby demonstrating that qudit-based circuits can be realistically deployed for cryptographic applications.
 
-## 2. Repository Structure
+## 2. Technical Flow
 
-```
-.
-├── __init__.py
-├── grover_utils.py
-├── grover_circuits.py
-├── qkd_utils.py
-├── qkd_circuits.py
-├── Grover_Measurements/ Grovers Circuit with Traditional Gates.png (histograms generated during execution)
-├── Grover_Measurements/ Grovers Circuit with Universal Gates.png (histograms generated during execution)
-├── QKD_Measurements/ QKD Basis Choice Distribution.png (distribution plot generated during execution)
-├── QKD_Measurements/ QKD Simulation Outcomes.txt (simulation log generated during execution)
-```
-
-- **`__init__.py`** → Entry point to run Grover’s Algorithm and QKD simulations.  
-- **`grover_utils.py`** → Core utilities for Grover’s algorithm (Hadamard, oracle, diffusion, decomposition).  
-- **`grover_circuits.py`** → Builders for Grover circuits (traditional and universal).  
-- **`qkd_utils.py`** → Qutrit swap gates, Hadamard generalizations, decomposition utilities.  
-- **`qkd_circuits.py`** → QKD simulation circuits for Alice and Bob.  
-- **Output folders** store histograms, logs, and distribution plots.  
-
-## 3. Technical Flow
-
-- Execution begins with **`__init__.py`**.  
 - For **Grover’s algorithm**: two 4-dimensional qudits are initialized.  
   - Traditional circuit → Generalized Hadamard, Uf, U0, measurement.  
   - Decomposed circuit → Reck’s decomposition of Hadamard-like gates into 2×2 rotations + PHASE1 gates.  
@@ -44,11 +21,18 @@ The aim is to confirm functional equivalence and assess performance trade-offs, 
   - Both traditional and universal gates are used.  
   - Keys are extracted where bases match.  
 - Outputs include:  
-  - Histograms of Grover amplified states.  
-  - Basis choice distribution plots.  
+  - Histograms of Grover amplified states, one with traditional gates, another with decomposed gates.  
+  - Basis choice distribution plots for Alice and Bob.  
   - Logs with per-round QKD results.  
 
-## 4. Grover’s Algorithm Validation
+### Cryptographic Relevance
+
+- Grover’s algorithm validates **attack feasibility** in qudit cryptanalysis.  
+- QKD demonstrates **defensive protocol correctness** under decomposition.  
+- Equivalence testing confirms minimal gate sets can support cryptography securely.  
+
+
+## 3. Grover’s Algorithm Validation
 
 ### Traditional Circuit
 
@@ -91,7 +75,7 @@ for M in R_matrices[::-1]:
 **Interpretation:** Both amplify the same marked state, confirming equivalence.  
 The universal version has greater depth but functional correctness is preserved.  
 
-## 5. Quantum Key Distribution (QKD) Validation
+## 4. Quantum Key Distribution (QKD) Validation
 
 - Alice chooses random trit (0/1/2) and basis (rectilinear/diagonal).  
 - Bob chooses random basis (rectilinear/diagonal).  
@@ -138,62 +122,46 @@ In case of universal decomposed gates, the only Hadamard gate in the circuit has
 
 ### Summary  
 
-- 100 rounds simulated.  
-- Around 50 shared key bits established.  
+- Typically 100 rounds simulated.  
+- Expected that around 50 shared key bits established.  
 - Both traditional and universal gates produced identical outcomes whenever choices of bases matches.  
 
-## 6. Implementation Details
+## 5. Implementation Details
 
 - **Reck’s decomposition** expresses arbitrary unitaries as products of 2×2 rotations and a diagonal phase.  
-- Custom Cirq gates (`QuditHGate`, `Qutrit_0swap1`, `Qutrit_0swap2`) are decomposed into `ArbitraryGate` instances.  
+- Custom Cirq gates are decomposed into `ArbitraryGate` instances.  
 - Circuits use `cirq.LineQid` with dimension=3 (QKD) or 4 (Grover).  
 - Outputs:  
   - Histograms (`Matplotlib`)  
   - Logs (plain text)  
 
-## 7. Results & Outputs
+## 6. Results & Outputs
 
-### Sample Grover JSON Output  
+### Sample Grover Outputs  
 
-```json
-{
-  "status": 200,
-  "Grovers Circuit with Traditional Gates": {
-    "measurement_outcomes": "Grover's algorithm has amplified the probability of the state 03",
-    "states_with_most_probability": "03 - 2404. 10 - 204. 12 - 188. 21 - 185. 33 - 184",
-    "histogram_location": "Grover_Measurements/Grovers Circuit with Traditional Gates.png"
-  },
-  "Grovers Circuit with Universal Gates": {
-    "measurement_outcomes": "Grover's algorithm has amplified the probability of the state 03",
-    "states_with_most_probability": "03 - 2400. 30 - 200. 00 - 200. 23 - 190. 20 - 187",
-    "histogram_location": "Grover_Measurements/Grovers Circuit with Universal Gates.png"
-  }
-}
-```
+- **Grovers Circuit with Traditional Gates**.  
+  - Measurement Outcomes → Grover's algorithm has amplified the probability of the state S_k.  
+  - Example of States with most probability → S_k - 2404. S_k1 - 204. S_k2 - 188. 
+  - Histogram of states with respective probability gets stored.
 
-### Sample QKD JSON Output  
+- **Grovers Circuit with Universal Gates**.  
+  - Measurement Outcomes → Grover's algorithm has amplified the probability of the state S_k.  
+  - Example of States with most probability → S_k - 2456. S_k1 - 191. S_k2 - 190. 
+  - Histogram of states with respective probability gets stored.
 
-```json
-{
-  "status": 200,
-  "QKD Simulation Response": {
-    "Total Rounds Simulated": 100,
-    "Number of Key Bits Established": 56,
-    "Shared Secret Key": "12201220120122220110210202122200201211121012212020010001",
-    "Impression": "The choosen bases of Alice and Bob has matched 56 times and 56 many times the circuits with traditional and universal gates has yielded same measurement.",
-    "QKD Simulation Logs": "QKD_Measurements/QKD Simulation Outcomes.txt",
-    "QKD Basis Choice Plot": "QKD_Measurements/QKD Basis Choice Distribution.png"
-  }
-}
-```
 
-## 8. Cryptographic Relevance
+### Sample QKD Outputs  
 
-- Grover’s algorithm validates **attack feasibility** in qudit cryptanalysis.  
-- QKD demonstrates **defensive protocol correctness** under decomposition.  
-- Equivalence testing confirms minimal gate sets can support cryptography securely.  
+- **QKD Simulation**.  
+  - Total Rounds Simulated → 100  
+  - Number of Key Bits Established → 56 
+  - Shared Secret Key → 12201220120122220110210202122200201211121012212020010001
+  - Impression → The choosen bases of Alice and Bob has matched 56 times and 56 many times the circuits with traditional and universal gates has yielded same measurement.
+  - QKD Simulations logs gets printed.
+  - Histogram of QKD Basis Choice Distribution gets stored.
 
-## 9. How to Run
+
+## 7. How to Run
 
 ### Requirements  
 
@@ -213,17 +181,13 @@ pip install -r requirements.txt
 
 ### Run Simulation  
 
-```bash
-python __init__.py
-```
-
-Outputs will be displayed in terminal itself.
-Histograms, distribution plots and simulation logs will be deposited in `Grover_Measurements/` and `QKD_Measurements/` folders.  
+Run the provied notebook files within the python environment with requried packages. 
 
 ---
 
 ## ✅ Conclusion
 This repository validates the practicality of the minimal universal gate set (`PHASE1 ∪ T_elements`) by demonstrating end-to-end cryptographic protocols in a reproducible Python framework.  
 Both **Grover's Algorithm** and **QKD Simulation** confirm **functional equivalence** between traditional and decomposed implementations, ensuring security and scalability in cryptographic contexts.
+
 
 
